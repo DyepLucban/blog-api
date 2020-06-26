@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Blog;
+use App\Repositories\Interfaces\BlogRepositoryInterface;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
+    private $blogRepository;
+
+    public function __construct(BlogRepositoryInterface $blogRepository)
+    {
+        $this->blogRepository = $blogRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blogs = Blog::all();
+        $blogs = $this->blogRepository->browse();
 
         return response()->json([
             'data' => $blogs,
@@ -41,13 +48,9 @@ class BlogController extends Controller
     public function store(Request $request)
     {
 
-        $blog = Blog::create([
-            'title' => $request->input('title'),
-            'image' => $request->input('image'),
-            'content' => $request->input('content'),
-        ]);
+        $newBlog = $this->blogRepository->add($request->all());
 
-        if ($blog) {
+        if ($newBlog) {
             return response()->json([
                 'message' => 'Blog Successfully Posted!',
                 'status' => 200,
@@ -64,7 +67,7 @@ class BlogController extends Controller
      */
     public function show($id)
     {
-        $specificBlog = Blog::find($id);
+        $specificBlog = $this->blogRepository->read($id);
 
         return response()->json([
             'data' => $specificBlog,
@@ -91,14 +94,8 @@ class BlogController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $specificBlog = Blog::where('id', $id)->first();
-
-        if ($specificBlog) {
-            $specificBlog->title = $request->input('title');
-            $specificBlog->image = $request->input('image');
-            $specificBlog->content = $request->input('content');
-            $specificBlog->save();
-        }
+        
+        $specificBlog = $this->blogRepository->edit($id, $request->all());
 
         return response()->json([
             'message' => 'Blog Successfully updated',
@@ -115,11 +112,7 @@ class BlogController extends Controller
      */
     public function destroy($id)
     {
-        $specificBlog = Blog::where('id', $id)->first();
-
-        if ($specificBlog) {
-            $specificBlog->delete();
-        }
+        $specificBlog = $this->blogRepository->delete($id);
 
         return response()->json([
             'message' => 'Blog Successfully Deleted!',
