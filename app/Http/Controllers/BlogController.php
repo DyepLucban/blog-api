@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\Interfaces\BlogRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class BlogController extends Controller
 {
@@ -24,10 +25,19 @@ class BlogController extends Controller
     {
         $blogs = $this->blogRepository->browse();
 
+        if (!$blogs->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'data' => $blogs,
+            ]);            
+        }
+
         return response()->json([
-            'data' => $blogs,
-            'status' => 200
-        ]);
+            'status' => 'error',
+            'code' => 404,            
+            'message' => 'No Result Found!',
+        ]);        
     }
 
     /**
@@ -48,18 +58,42 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:255',
+            'content' => 'required|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 405,
+                'message' => 'Dont leave title or content blank',
+            ]);
+        }        
+
         $flag = 'post';
 
         $data = $this->imageDecoder($request->all(), $flag);
 
-        $newBlog = $this->blogRepository->add($data);
+        if ($data) {
+            $newBlog = $this->blogRepository->add($data);
 
-        if ($newBlog) {
-            return response()->json([
-                'message' => 'Blog Successfully Posted!',
-                'status' => 200,
-            ]);
+            if ($newBlog) {
+                return response()->json([
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'Blog Successfully Posted!',
+                ]);
+            }
         }
+
+        return response()->json([
+            'status' => 'error',
+            'code' => 400,
+            'message' => 'Bad Request',
+        ]);        
+
     }
 
     /**
@@ -70,11 +104,23 @@ class BlogController extends Controller
      */
     public function show($id)
     {
+
         $specificBlog = $this->blogRepository->read($id);
 
+        if ($specificBlog) {
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'data' => $specificBlog,
+            ]);            
+        }
+
         return response()->json([
-            'data' => $specificBlog,
+            'status' => 'error',
+            'code' => 404,            
+            'message' => 'No Result Found!',
         ]);
+
     }
 
     /**
@@ -104,10 +150,20 @@ class BlogController extends Controller
 
         $specificBlog = $this->blogRepository->edit($id, $data);
 
+        if ($specificBlog) {
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Blog Successfully updated',
+            ]);            
+        }
+
         return response()->json([
-            'message' => 'Blog Successfully updated',
-            'status' => 200,
+            'status' => 'error',
+            'code' => 400,
+            'message' => 'Bad Request',
         ]);
+
     }
 
     /**
@@ -120,19 +176,38 @@ class BlogController extends Controller
     {
         $specificBlog = $this->blogRepository->delete($id);
 
+        if ($specificBlog)
+        {
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Blog Successfully Deleted!',
+            ]);            
+        }
+
         return response()->json([
-            'message' => 'Blog Successfully Deleted!',
-            'status' => 200,
-        ]);
+            'status' => 'error',
+            'code' => 400,
+            'message' => 'Bad Request',
+        ]);        
     }
 
     public function showAllDeleted()
     {
         $deletedBlogs = $this->blogRepository->showAllDeleted();
 
+        if (!$deletedBlogs->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'data' => $deletedBlogs,
+            ]);            
+        }
+
         return response()->json([
-            'data' => $deletedBlogs,
-            'status' => 200
+            'status' => 'error',
+            'code' => 404,
+            'message' => 'No Result Found!',
         ]);        
     }
 
@@ -142,22 +217,36 @@ class BlogController extends Controller
 
         if ($deletedBlogId) {
             return response()->json([
+                'status' => 'success',
+                'code' => 200,
                 'message' => 'Blog Successfully Restored!',
-                'status' => 200
             ]);          
         }
+
+        return response()->json([
+            'status' => 'error',
+            'code' => 400,
+            'message' => 'Bad Request',
+        ]);       
     }
 
     public function searchBlog(Request $request)
     {
         $searchedBlog = $this->blogRepository->searchBlog($request->input('text'));
 
-        if ($searchedBlog) {
+        if (!$searchedBlog->isEmpty()) {
             return response()->json([
+                'status' => 'success',
+                'code' => 200,
                 'data' => $searchedBlog,
-                'status' => 200
             ]);          
         }
+
+        return response()->json([
+            'status' => 'error',
+            'code' => 404,
+            'message' => 'No Result Found!',
+        ]);         
     }
 
     public function imageDecoder($params, $flag)
