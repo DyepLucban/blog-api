@@ -178,7 +178,7 @@ class BlogController extends Controller
 
             $data = [
                 'title' => $params['title'],
-                // 'image' => $filename,
+                // 'image' => 'http://127.0.0.1:8000/images/' . $filename,
                 'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
                 'content' => $params['content'],
             ];
@@ -205,7 +205,7 @@ class BlogController extends Controller
 
                 $data = [
                     'title' => $params['title'],
-                    // 'image' => $filename,
+                    // 'image' => 'http://127.0.0.1:8000/images/' . $filename,
                     'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
                     'content' => $params['content'],
                 ];
@@ -216,8 +216,8 @@ class BlogController extends Controller
 
                 $data = [
                     'title' => $params['title'],
-                    // 'image' => $params['image'],
-                    'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
+                    'image' => $params['image'],
+                    // 'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
                     'content' => $params['content'],
                 ];
 
