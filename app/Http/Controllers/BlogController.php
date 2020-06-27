@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\Interfaces\BlogRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -47,23 +48,9 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        $explode = explode(',', $request->input('image'));
+        $flag = 'post';
 
-        $decode = base64_decode($explode[1]);
-
-        $test = str_contains($explode[0], 'jpeg') ? $extension = 'jpg' : $extension = 'png';
-
-        $filename = 'test.' . $extension;
-        
-        $path = public_path() . '/images/' . $filename;
-
-        file_put_contents($path, $decode);
-
-        $data = [
-            'title' => $request->input('title'),
-            'image' => $path,
-            'content' => $request->input('content')
-        ];
+        $data = $this->imageDecoder($request->all(), $flag);
 
         $newBlog = $this->blogRepository->add($data);
 
@@ -110,7 +97,12 @@ class BlogController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $specificBlog = $this->blogRepository->edit($id, $request->all());
+
+        $flag = 'update';
+
+        $data = $this->imageDecoder($request->all(), $flag);
+
+        $specificBlog = $this->blogRepository->edit($id, $data);
 
         return response()->json([
             'message' => 'Blog Successfully updated',
@@ -166,5 +158,75 @@ class BlogController extends Controller
                 'status' => 200
             ]);          
         }
-    }    
+    }
+
+    public function imageDecoder($params, $flag)
+    {
+        if ($flag == 'post') {
+
+            $explode = explode(',', $params['image']);
+
+            $decode = base64_decode($explode[1]);
+
+            str_contains($explode[0], 'jpeg') ? $extension = 'jpg' : $extension = 'png';
+
+            $filename = Str::random(12) . '.' .$extension;
+            
+            $path = public_path() . '/images/' . $filename;
+
+            file_put_contents($path, $decode);
+
+            $data = [
+                'title' => $params['title'],
+                'image' => $filename,
+                // 'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
+                'content' => $params['content'],
+            ];
+
+            return $data; 
+            
+        } else {
+
+            $checkImage = str_contains($params['image'], 'data');
+
+            if ($checkImage) 
+            {
+                $explode = explode(',', $params['image']);
+
+                $decode = base64_decode($explode[1]);
+
+                str_contains($explode[0], 'jpeg') ? $extension = 'jpg' : $extension = 'png';
+
+                $filename = Str::random(12) . '.' .$extension;
+                
+                $path = public_path() . '/images/' . $filename;
+
+                file_put_contents($path, $decode);
+
+                $data = [
+                    'title' => $params['title'],
+                    'image' => $filename,
+                    'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
+                    // 'content' => $params['content'],
+                ];
+
+                return $data;
+
+            } else {
+
+                $data = [
+                    'title' => $params['title'],
+                    'image' => $params['image'],
+                    'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
+                    // 'content' => $params['content'],
+                ];
+
+                return $data;
+
+            }
+
+        }
+       
+    }
+
 }
