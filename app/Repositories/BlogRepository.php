@@ -27,7 +27,7 @@ class BlogRepository implements BlogRepositoryInterface
 
         $blog = Blog::create([
             'title' => $request['title'],
-            'image' => $request['image'],
+            'image' => 'test image',
             'content' => $request['content'],
         ]);
 
@@ -59,5 +59,27 @@ class BlogRepository implements BlogRepositoryInterface
 
             return true;
         }
+    }
+
+    public function showAllDeleted()
+    {
+        $deletedBlogs = Blog::onlyTrashed()->get();
+
+        return $deletedBlogs;
+
+    }
+
+    public function restoreDeleted($id)
+    {
+        $deletedBlog = Blog::where('id', $id)->restore();
+
+        return $deletedBlog;
+    }
+
+    public function searchBlog($params)
+    {
+        $searchedBlog = Blog::where('title', 'like', '%'.$params.'%')->get();
+
+        return $searchedBlog;
     }
 }

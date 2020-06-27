@@ -47,7 +47,6 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-
         $newBlog = $this->blogRepository->add($request->all());
 
         if ($newBlog) {
@@ -119,4 +118,38 @@ class BlogController extends Controller
             'status' => 200,
         ]);
     }
+
+    public function showAllDeleted()
+    {
+        $deletedBlogs = $this->blogRepository->showAllDeleted();
+
+        return response()->json([
+            'data' => $deletedBlogs,
+            'status' => 200
+        ]);        
+    }
+
+    public function restoreDeleted($id)
+    {
+        $deletedBlogId = $this->blogRepository->restoreDeleted($id);
+
+        if ($deletedBlogId) {
+            return response()->json([
+                'message' => 'Blog Successfully Restored!',
+                'status' => 200
+            ]);          
+        }
+    }
+
+    public function searchBlog(Request $request)
+    {
+        $searchedBlog = $this->blogRepository->searchBlog($request->input('text'));
+
+        if ($searchedBlog) {
+            return response()->json([
+                'data' => $searchedBlog,
+                'status' => 200
+            ]);          
+        }
+    }    
 }

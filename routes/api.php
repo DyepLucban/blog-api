@@ -20,3 +20,6 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::resource('/blog', 'BlogController');
+Route::get('/deleted-blog', 'BlogController@showAllDeleted');
+Route::put('/restore-deleted/{id}', 'BlogController@restoreDeleted');
+Route::post('/search-blog', 'BlogController@searchBlog');

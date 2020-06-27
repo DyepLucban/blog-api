@@ -14,4 +14,10 @@ interface BlogRepositoryInterface
 
     public function delete($id);
 
+    public function showAllDeleted();
+
+    public function restoreDeleted($id);
+
+    public function searchBlog($request);
+
 }

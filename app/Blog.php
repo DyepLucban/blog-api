@@ -3,12 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Blog extends Model
 {
-    protected $table = 'blogs';
+	use SoftDeletes;
 
-    protected $softDelete = true;
+    protected $table = 'blogs';
 
     protected $fillable = [
         'title', 'image', 'content',
