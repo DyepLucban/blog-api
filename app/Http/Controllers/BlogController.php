@@ -55,7 +55,6 @@ class BlogController extends Controller
                 'status' => 200,
             ]);
         }
-
     }
 
     /**
@@ -93,14 +92,12 @@ class BlogController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
         $specificBlog = $this->blogRepository->edit($id, $request->all());
 
         return response()->json([
             'message' => 'Blog Successfully updated',
             'status' => 200,
         ]);
-
     }
 
     /**
