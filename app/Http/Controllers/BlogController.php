@@ -178,8 +178,8 @@ class BlogController extends Controller
 
             $data = [
                 'title' => $params['title'],
-                'image' => $filename,
-                // 'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
+                // 'image' => $filename,
+                'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
                 'content' => $params['content'],
             ];
 
@@ -205,9 +205,9 @@ class BlogController extends Controller
 
                 $data = [
                     'title' => $params['title'],
-                    'image' => $filename,
+                    // 'image' => $filename,
                     'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
-                    // 'content' => $params['content'],
+                    'content' => $params['content'],
                 ];
 
                 return $data;
@@ -216,9 +216,9 @@ class BlogController extends Controller
 
                 $data = [
                     'title' => $params['title'],
-                    'image' => $params['image'],
+                    // 'image' => $params['image'],
                     'image' => "https://heroku-blog-api.herokuapp.com/images/" . $filename,
-                    // 'content' => $params['content'],
+                    'content' => $params['content'],
                 ];
 
                 return $data;
