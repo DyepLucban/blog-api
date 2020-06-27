@@ -47,7 +47,25 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        $newBlog = $this->blogRepository->add($request->all());
+        $explode = explode(',', $request->input('image'));
+
+        $decode = base64_decode($explode[1]);
+
+        $test = str_contains($explode[0], 'jpeg') ? $extension = 'jpg' : $extension = 'png';
+
+        $filename = 'test.' . $extension;
+        
+        $path = public_path() . '/images/' . $filename;
+
+        file_put_contents($path, $decode);
+
+        $data = [
+            'title' => $request->input('title'),
+            'image' => $path,
+            'content' => $request->input('content')
+        ];
+
+        $newBlog = $this->blogRepository->add($data);
 
         if ($newBlog) {
             return response()->json([

@@ -27,7 +27,7 @@ class BlogRepository implements BlogRepositoryInterface
 
         $blog = Blog::create([
             'title' => $request['title'],
-            'image' => 'test image',
+            'image' => $request['image'],
             'content' => $request['content'],
         ]);
 
