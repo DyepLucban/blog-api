@@ -224,7 +224,7 @@ class BlogController extends Controller
             'code' => 404,
             'message' => 'No Result Found!',
             'data' => $deletedBlogs,
-        ], 404);        
+        ]);        
     }
 
     public function restoreDeleted($id)
