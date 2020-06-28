@@ -208,6 +208,7 @@ class BlogController extends Controller
             'status' => 'error',
             'code' => 404,
             'message' => 'No Result Found!',
+            'data' => $deletedBlogs,
         ]);        
     }
 
