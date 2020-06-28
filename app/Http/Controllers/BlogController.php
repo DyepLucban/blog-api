@@ -62,13 +62,14 @@ class BlogController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|max:255',
             'content' => 'required|max:255',
+            'image' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'code' => 405,
-                'message' => 'Dont leave title or content blank',
+                'code' => 422,
+                'message' => $validator->errors(),
             ]);
         }        
 
@@ -119,7 +120,7 @@ class BlogController extends Controller
             'status' => 'error',
             'code' => 404,            
             'message' => 'No Result Found!',
-        ]);
+        ], 404);
 
     }
 
@@ -144,6 +145,20 @@ class BlogController extends Controller
     public function update(Request $request, $id)
     {
 
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:255',
+            'content' => 'required|max:255',
+            'image' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 422,
+                'message' => $validator->errors(),
+            ]);
+        }         
+
         $flag = 'update';
 
         $data = $this->imageDecoder($request->all(), $flag);
@@ -162,7 +177,7 @@ class BlogController extends Controller
             'status' => 'error',
             'code' => 400,
             'message' => 'Bad Request',
-        ]);
+        ], 400);
 
     }
 
@@ -189,7 +204,7 @@ class BlogController extends Controller
             'status' => 'error',
             'code' => 400,
             'message' => 'Bad Request',
-        ]);        
+        ], 400);        
     }
 
     public function showAllDeleted()
@@ -209,7 +224,7 @@ class BlogController extends Controller
             'code' => 404,
             'message' => 'No Result Found!',
             'data' => $deletedBlogs,
-        ]);        
+        ], 404);        
     }
 
     public function restoreDeleted($id)
@@ -228,7 +243,7 @@ class BlogController extends Controller
             'status' => 'error',
             'code' => 400,
             'message' => 'Bad Request',
-        ]);       
+        ], 400);       
     }
 
     public function searchBlog(Request $request)
