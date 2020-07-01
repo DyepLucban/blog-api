@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-
+Route::resource('/send-email', 'EmailController');
 Route::resource('/blog', 'BlogController');
 Route::get('/deleted-blog', 'BlogController@showAllDeleted');
 Route::put('/restore-deleted/{id}', 'BlogController@restoreDeleted');
