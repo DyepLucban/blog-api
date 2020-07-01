@@ -333,6 +333,7 @@ ul.social li{
           	<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           		<tr>
           			<td class="logo" style="text-align: center;">
+			            <h1><span>From:</span> {{ $details['sender_name'] }} | {{ $details['sender_email'] }}</h1>
 			          </td>
           		</tr>
           	</table>
@@ -349,7 +350,8 @@ ul.social li{
             	<tr>
             		<td>
             			<div class="text" style="padding: 0 2.5em; text-align: center;">
-   
+            				<h2>{{ $details['subject'] }}</h2>
+            				<h3>{{ $details['message'] }}</h3>
             				<p><a href="#" class="btn btn-primary">Yes! Subscribe Me</a></p>
 	 	
             			</div>
