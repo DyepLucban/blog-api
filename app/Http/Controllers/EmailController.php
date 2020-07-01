@@ -35,9 +35,6 @@ class EmailController extends Controller
      */
     public function store(Request $request)
     {
-        $to_name = "test name";
-        $to_email = "lucbanjep@gmail.com";
-
         $details = [
             'sender_email' => $request->input('email'),
             'sender_name' => $request->input('name'),
