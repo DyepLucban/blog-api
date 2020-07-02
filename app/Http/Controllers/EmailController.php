@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class EmailController extends Controller
 {
@@ -35,20 +36,42 @@ class EmailController extends Controller
      */
     public function store(Request $request)
     {
-        $details = [
-            'sender_email' => $request->input('email'),
-            'sender_name' => $request->input('name'),
-            'subject' => $request->input('subject'),
-            'message' => $request->input('message'),
-        ];
+        
+        try {
 
-        \Mail::to('lucbanjep@gmail.com')->send(new SendEmail($details));
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'name' => 'required|min:8',
+                'subject' => 'required|min:5',
+                'message' => 'required|min:10',            
+            ]);
 
-        return response()->json([
-            'message' => 'Email Successfully Send',
-            'status' =>  'success',
-            'code' => 200
-        ], 200);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 422,
+                    'message' => $validator->errors(),
+                ], 422);
+            }
+
+            $details = [
+                'sender_email' => $request->input('email'),
+                'sender_name' => $request->input('name'),
+                'subject' => $request->input('subject'),
+                'message' => $request->input('message'),
+            ];
+
+            \Mail::to('lucbanjep@gmail.com')->send(new SendEmail($details));
+
+            return response()->json([
+                'message' => 'Email Successfully Sent!',
+                'status' =>  'success',
+                'code' => 200
+            ], 200);
+
+        } catch (\Execption $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
